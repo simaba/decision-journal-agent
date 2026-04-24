@@ -1,28 +1,38 @@
 # decision-journal-agent
 
-A lightweight forecasting and decision-journaling agent for PM work.
+A lightweight decision-journal tool for PM and operator workflows.
 
-This repo captures decisions with context, assumptions, confidence, review dates, and success criteria, then prompts calibration reviews over time.
+## Status
 
-## Why it matters
+**Early working CLI.**
 
-Many teams document decisions but do not revisit them. That makes learning weak and accountability fuzzy.
+This repository already supports creating markdown decision entries and listing entries whose review date is due. It does **not** yet provide full calibration analytics, expected-vs-actual scoring, or advanced review workflows.
 
-This repo helps you:
+## What it is for
 
-- capture decisions consistently
-- record confidence and assumptions
-- schedule review points
-- compare expected vs actual outcomes
-- improve calibration over time
+Use this repo when you want a small, local workflow for:
 
-## Features
+- capturing a decision consistently
+- recording confidence at the time of the decision
+- assigning a review date
+- maintaining a simple queue of decisions that need review
 
-- markdown-based decision entries
-- CLI to create and review decisions
-- simple confidence tracking
-- review queue generation
-- reusable journal template
+## What it does today
+
+- creates markdown-based decision entries
+- stores confidence and review date in each entry
+- provides a `due` command to list entries ready for review
+- uses a reusable journal template
+
+## What it does not claim yet
+
+This repo does **not** yet claim:
+
+- calibration scoring over time
+- expected-vs-actual variance analysis
+- forecasting metrics dashboards
+- automated review summaries
+- statistical quality measurement for decision quality
 
 ## Quick start
 
@@ -34,8 +44,21 @@ decision-journal due
 
 ## Repo layout
 
-- `skills/decision-journaling`
-- `agents/decision-journaler`
 - `templates/decision-entry.md`
 - `entries/` for journal files
-- `src/` for light CLI logic
+- `src/` for lightweight CLI logic
+- `skills/decision-journaling`
+- `agents/decision-journaler`
+
+## Next maturity step
+
+To justify stronger decision-quality claims, this repo should next add:
+
+1. a `review` command for recording actual outcomes
+2. structured comparison between expected and actual results
+3. simple calibration summaries over time
+4. tests for entry parsing and review workflows
+
+---
+
+*Maintained by [Sima Bagheri](https://github.com/simaba).*
