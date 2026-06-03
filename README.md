@@ -2,49 +2,30 @@
 
 A lightweight decision-journal tool for PM, product, strategy, and operator workflows.
 
-## Status
+## Maturity
 
 **Early working CLI.**
 
-This repository supports creating markdown decision entries and listing entries whose review date is due. It does **not** yet provide full calibration analytics, expected-vs-actual scoring, or advanced review workflows.
+This repository supports creating Markdown decision entries and listing entries whose review date is due. It does not yet provide calibration analytics, expected-versus-actual scoring, or advanced review workflows.
 
-## What it is for
+## Purpose
 
-Use this repo when you want a small, local workflow for:
+Decision journals help teams and individuals improve decision quality by recording what was decided, why it was decided, how confident the decision-maker was, and when the outcome should be reviewed.
 
-- capturing a decision consistently
-- recording confidence at the time of the decision
+This repository provides a small local workflow for:
+
+- capturing decisions consistently
+- recording confidence at the time of decision
 - assigning a review date
-- maintaining a simple queue of decisions that need review
-- improving decision quality through later reflection
+- maintaining a simple queue of decisions due for review
+- supporting reflection after outcomes are known
 
-## What it does today
+## Current capabilities
 
-- creates markdown-based decision entries
+- creates Markdown-based decision entries
 - stores confidence and review date in each entry
 - provides a `due` command to list entries ready for review
 - uses a reusable journal template
-
-## What it does not claim yet
-
-This repo does **not** yet claim:
-
-- calibration scoring over time
-- expected-vs-actual variance analysis
-- forecasting metrics dashboards
-- automated review summaries
-- statistical quality measurement for decision quality
-
-## Public-use safety note
-
-Decision journals can easily contain sensitive business, career, financial, health, relationship, or personal information. If you use this repository in a public or shared GitHub repo, do not commit real decision entries.
-
-Recommended public-safe pattern:
-
-- keep real entries outside the repository
-- use `entries/examples/` only for fictional examples
-- avoid naming real employers, customers, partners, vendors, colleagues, or confidential projects
-- remove private reasoning, negotiation details, and internal risk assessments before sharing
 
 ## Quick start
 
@@ -54,19 +35,40 @@ decision-journal new "Delay launch by two weeks" --confidence 0.72 --review-date
 decision-journal due
 ```
 
-## Repo layout
+## Repository layout
 
 ```text
-templates/decision-entry.md   # reusable entry template
-entries/examples/             # fictional examples safe to publish
-src/                          # lightweight CLI logic
-skills/decision-journaling    # reusable decision-journaling skill
-agents/decision-journaler     # agent instructions for decision capture and review
+templates/decision-entry.md   reusable entry template
+entries/examples/             fictional examples safe to publish
+src/                          lightweight CLI logic
+skills/decision-journaling    reusable decision-journaling skill
+agents/decision-journaler     agent instructions for decision capture and review
 ```
 
-## Next maturity step
+## Publication safety
 
-To justify stronger decision-quality claims, this repo should next add:
+Decision journals can contain sensitive business, career, financial, health, relationship, or personal information. If this repository is public or shared, do not commit real decision entries.
+
+Recommended pattern:
+
+- keep real entries outside the repository
+- use `entries/examples/` only for fictional examples
+- avoid naming real employers, customers, partners, vendors, colleagues, or confidential projects
+- remove private reasoning, negotiation details, and internal risk assessments before sharing
+
+## Out of scope
+
+This early CLI does not yet provide:
+
+- calibration scoring over time
+- expected-versus-actual variance analysis
+- forecasting metrics dashboards
+- automated review summaries
+- statistical quality measurement for decision quality
+
+## Roadmap
+
+To support stronger decision-quality analysis, this repository should add:
 
 1. a `review` command for recording actual outcomes
 2. structured comparison between expected and actual results
