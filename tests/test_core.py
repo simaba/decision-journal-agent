@@ -1,3 +1,4 @@
+from datetime import date
 from pathlib import Path
 
 import pytest
@@ -5,6 +6,7 @@ import pytest
 from decision_journal_agent.core import (
     DecisionEntry,
     default_journal_dir,
+    due_entries,
     record_review,
     render_entry,
     slugify,
@@ -53,3 +55,35 @@ def test_record_review_updates_supported_entry(tmp_path):
     assert "Reviewed on:" in text
     assert "fictional outcome" in text
     assert "review trigger" in text
+
+
+def test_due_entries_excludes_reviewed_entries_by_default(tmp_path):
+    due = write_entry(
+        tmp_path,
+        DecisionEntry(title="Due and open", confidence=0.5, review_date="2026-05-01"),
+    )
+    reviewed = write_entry(
+        tmp_path,
+        DecisionEntry(title="Due and reviewed", confidence=0.5, review_date="2026-05-01"),
+    )
+    record_review(reviewed, "Fictional outcome recorded.", "Fictional lesson recorded.")
+
+    result = due_entries(tmp_path, today=date(2026, 6, 1))
+
+    assert result == [due]
+
+
+def test_due_entries_can_include_reviewed_entries_for_history(tmp_path):
+    open_entry = write_entry(
+        tmp_path,
+        DecisionEntry(title="Open", confidence=0.5, review_date="2026-05-01"),
+    )
+    reviewed = write_entry(
+        tmp_path,
+        DecisionEntry(title="Reviewed", confidence=0.5, review_date="2026-05-01"),
+    )
+    record_review(reviewed, "Fictional outcome recorded.", "Fictional lesson recorded.")
+
+    result = due_entries(tmp_path, today=date(2026, 6, 1), include_reviewed=True)
+
+    assert result == [open_entry, reviewed]
