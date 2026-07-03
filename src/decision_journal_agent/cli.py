@@ -1,10 +1,17 @@
 from __future__ import annotations
 
 import argparse
-from datetime import date
 from pathlib import Path
 
-from .core import DecisionEntry, default_journal_dir, record_review, slugify, write_entry
+from .core import (
+    DecisionEntry,
+    default_journal_dir,
+    due_entries,
+    invalid_review_date_entries,
+    record_review,
+    slugify,
+    write_entry,
+)
 
 
 def _journal_dir(value: str | None) -> Path:
@@ -29,6 +36,11 @@ def main() -> int:
     due.add_argument(
         "--dir",
         help="Journal directory. Defaults to ~/.decision-journal/entries outside this repository.",
+    )
+    due.add_argument(
+        "--include-reviewed",
+        action="store_true",
+        help="Include entries that already contain a recorded review.",
     )
 
     review = sub.add_parser("review")
@@ -58,21 +70,11 @@ def main() -> int:
             return 0
 
         if args.command == "due":
-            today = date.today()
             base = _journal_dir(args.dir)
-            if not base.exists():
-                return 0
-            for path in sorted(base.glob("*.md")):
-                text = path.read_text(encoding="utf-8")
-                marker = "- Review date: "
-                if marker not in text:
-                    continue
-                review_date = text.split(marker, 1)[1].splitlines()[0].strip()
-                try:
-                    if date.fromisoformat(review_date) <= today:
-                        print(path)
-                except ValueError:
-                    print(f"Skipping invalid review date in {path}", flush=True)
+            for path in due_entries(base, include_reviewed=args.include_reviewed):
+                print(path)
+            for path in invalid_review_date_entries(base):
+                print(f"Skipping invalid review date in {path}", flush=True)
             return 0
 
         if args.command == "review":
