@@ -6,7 +6,7 @@ A lightweight decision-journal tool for PM, product, strategy, and operator work
 
 **Early working CLI.**
 
-This repository supports creating Markdown decision entries and listing entries whose review date is due. It does not yet provide calibration analytics, expected-versus-actual scoring, or advanced review workflows.
+This repository supports creating Markdown decision entries, recording a review outcome, and listing entries whose review date is due. It does not yet provide calibration analytics, expected-versus-actual scoring, or advanced review workflows.
 
 ## Purpose
 
@@ -17,23 +17,30 @@ This repository provides a small local workflow for:
 - capturing decisions consistently
 - recording confidence at the time of decision
 - assigning a review date
-- maintaining a simple queue of decisions due for review
-- supporting reflection after outcomes are known
+- maintaining a queue of open decisions due for review
+- recording outcomes and lessons after review
 
 ## Current capabilities
 
 - creates Markdown-based decision entries
 - stores confidence and review date in each entry
-- provides a `due` command to list entries ready for review
+- provides a `due` command for open entries ready for review
+- provides a `review` command for recording one outcome and lesson set
+- stores real entries outside the repository by default
 - uses a reusable journal template
 
 ## Quick start
 
 ```bash
-pip install -e .
+python -m pip install -e .
 decision-journal new "Delay launch by two weeks" --confidence 0.72 --review-date 2026-05-15
 decision-journal due
+decision-journal review "Delay launch by two weeks" \
+  --outcome "The fictional launch delay reduced avoidable rework." \
+  --lessons "Use the same review trigger for similar decisions."
 ```
+
+`decision-journal due` excludes entries that already contain a recorded review. Use `--include-reviewed` only when you want to inspect past-due history as well as the open queue.
 
 ## Repository layout
 
@@ -65,16 +72,17 @@ This early CLI does not yet provide:
 - forecasting metrics dashboards
 - automated review summaries
 - statistical quality measurement for decision quality
+- multiple reviews or outcome-history edits for one entry
 
 ## Roadmap
 
 To support stronger decision-quality analysis, this repository should add:
 
-1. a `review` command for recording actual outcomes
-2. structured comparison between expected and actual results
-3. simple calibration summaries over time
-4. tests for entry parsing and review workflows
-5. public-safe fictional examples showing the full lifecycle from decision to review
+1. structured comparison between expected and actual results
+2. simple calibration summaries over time
+3. tests for entry parsing and richer review workflows
+4. public-safe fictional examples showing the full lifecycle from decision to review
+5. an explicit edit or follow-up model for reviewed decisions
 
 ## Scope and disclaimer
 
