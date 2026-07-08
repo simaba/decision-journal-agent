@@ -6,6 +6,8 @@ from pathlib import Path
 
 
 DEFAULT_JOURNAL_DIR = Path.home() / ".decision-journal" / "entries"
+REVIEW_DATE_MARKER = "- Review date: "
+REVIEWED_ON_MARKER = "- Reviewed on:"
 
 
 @dataclass
@@ -75,13 +77,67 @@ def write_entry(
     return path
 
 
+def entry_is_reviewed(text: str) -> bool:
+    """Return whether an entry already has a recorded outcome review."""
+    return REVIEWED_ON_MARKER in text
+
+
+def due_entries(
+    base_dir: str | Path,
+    *,
+    today: date | None = None,
+    include_reviewed: bool = False,
+) -> list[Path]:
+    """Return journal entries due for review, excluding completed reviews by default.
+
+    Entries with a malformed or absent review date are ignored here. The CLI
+    reports those files so users can correct them without breaking the queue.
+    """
+    base = Path(base_dir)
+    if not base.exists():
+        return []
+    today = today or date.today()
+    due: list[Path] = []
+    for path in sorted(base.glob("*.md")):
+        text = path.read_text(encoding="utf-8")
+        if not include_reviewed and entry_is_reviewed(text):
+            continue
+        if REVIEW_DATE_MARKER not in text:
+            continue
+        review_date = text.split(REVIEW_DATE_MARKER, 1)[1].splitlines()[0].strip()
+        try:
+            if date.fromisoformat(review_date) <= today:
+                due.append(path)
+        except ValueError:
+            continue
+    return due
+
+
+def invalid_review_date_entries(base_dir: str | Path) -> list[Path]:
+    """Return entries with a review-date marker that cannot be parsed."""
+    base = Path(base_dir)
+    if not base.exists():
+        return []
+    invalid: list[Path] = []
+    for path in sorted(base.glob("*.md")):
+        text = path.read_text(encoding="utf-8")
+        if REVIEW_DATE_MARKER not in text:
+            continue
+        review_date = text.split(REVIEW_DATE_MARKER, 1)[1].splitlines()[0].strip()
+        try:
+            date.fromisoformat(review_date)
+        except ValueError:
+            invalid.append(path)
+    return invalid
+
+
 def record_review(entry_path: str | Path, outcome: str, lessons: str) -> Path:
     """Record a dated outcome and lesson for an existing journal entry."""
     path = Path(entry_path)
     text = path.read_text(encoding="utf-8")
     if "## Actual outcome\n" not in text or "## Lessons learned\n" not in text:
         raise ValueError("entry does not match the supported decision-journal template")
-    if "- Reviewed on:" in text:
+    if entry_is_reviewed(text):
         raise ValueError("entry already contains a recorded review")
 
     reviewed_on = date.today().isoformat()
